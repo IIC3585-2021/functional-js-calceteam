@@ -7,7 +7,7 @@ const rl = readline.createInterface({
 
 //cálculo del puntaje en base al valor entregado, aquí termina el chaining
 const calculate = (x) => ({
-    on: () => calcular(x),
+    on: () => calculate(x),
     other: () => x,
 });
 
@@ -19,7 +19,7 @@ const review = (x) => ({
 
 //se ingresa la jugada de un jugador donde lanzamientos es de la forma ['DB',[3,19],[2,20]]
 const enter_play = (score) => {
-    return (throwings) => throwings.reduce((total, throwing) => Math.abs(total - review(throwing).on('DB', 50).on('SB', 25).other(x => x[0] * x[1]))
+    return (throwings) => throwings.reduce((total, throwing) => (total - review(throwing).on('DB', 50).on('SB', 25).other(x => x[0] * x[1]))
       , score);
 };
 
@@ -50,9 +50,10 @@ const winner = (players) => {
 
 //función recursiva que permite iterar por los jugadores y obtener sus lanzamientos 
 const game = (players) => (j) => async (next) => {
-    console.log(`Es el turno de  ${players[j][0]} con ${players[j][1]} puntos`);
+  console.log(`Es el turno de  ${players[j][0]} con ${players[j][1]} puntos`);
 	const move = await askTurn();
-	players[j][1] = enter_play(players[j][1])(move);
+	players[j][1] = Math.abs(enter_play(players[j][1])(move));
+  console.log(`${players[j][0]} queda con ${players[j][1]} puntos\n`);
 	return winner(players) ? players[j] : game(players)(next(j, players))(next);
 }
 
